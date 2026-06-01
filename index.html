@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SoulCraft Game</title>
+    <style>
+        *{box-sizing:border-box;}
+        body{background:#0a2f2a;font-family:monospace;padding:15px;}
+        .game-container{max-width:600px;margin:0 auto;background:#0d241f;border-radius:2rem;padding:1rem;}
+        button{background:#2c705b;color:white;padding:10px;margin:5px;border-radius:1rem;border:none;}
+        .stat{background:#02120e;padding:8px;margin:5px;border-radius:1rem;color:#ffdd88;}
+    </style>
+</head>
+<body>
+<div class="game-container">
+    <h2>SoulCraft</h2>
+    <div class="stat">❤️ Health: <span id="hp">100</span></div>
+    <div class="stat">💰 Gold: <span id="gold">500</span></div>
+    <div class="stat">🌲 Wood: <span id="wood">0</span></div>
+    <button id="chop">🪓 Chop Wood</button>
+    <button id="mineBtn">⛏️ Mine Stone</button>
+    <button id="fishBtn">🎣 Catch Fish</button>
+    <button id="attack">⚔️ Attack Enemy</button>
+    <button id="heal">💊 Heal (50g)</button>
+    <button id="donate">❤️ Donate (UPI)</button>
+    <button id="reset">⟳ Reset</button>
+    <p>UPI: sunnynimbre3@oksbi</p>
+</div>
+<script>
+    let gold=500, wood=0, stone=0, fish=0, hp=100, maxHp=100, atk=25;
+    let enemy={name:"Slime", hp:30};
+    function save(){localStorage.setItem("save",JSON.stringify({gold,wood,stone,fish,hp,atk,enemy}));}
+    function load(){
+        let d=localStorage.getItem("save");
+        if(d){let x=JSON.parse(d); gold=x.gold; wood=x.wood; stone=x.stone; fish=x.fish; hp=x.hp; atk=x.atk; enemy=x.enemy;}
+        refresh();
+    }
+    function refresh(){
+        document.getElementById("hp").innerText=hp;
+        document.getElementById("gold").innerText=Math.floor(gold);
+        document.getElementById("wood").innerText=Math.floor(wood);
+    }
+    document.getElementById("chop").onclick=()=>{ wood+=2; refresh(); save(); };
+    document.getElementById("mineBtn").onclick=()=>{ stone+=2; refresh(); save(); };
+    document.getElementById("fishBtn").onclick=()=>{ fish+=2; refresh(); save(); };
+    document.getElementById("attack").onclick=()=>{
+        let dmg=atk+Math.floor(Math.random()*10);
+        enemy.hp-=dmg;
+        if(enemy.hp<=0){
+            gold+=50;
+            enemy={name:"Goblin", hp:45};
+            alert("Victory! +50 gold");
+        }else{
+            let edmg=Math.max(1,10-Math.floor(atk/10));
+            hp-=edmg;
+            if(hp<=0){ hp=maxHp; gold=Math.max(0,gold-100); alert("You died! -100 gold");}
+        }
+        refresh(); save();
+    };
+    document.getElementById("heal").onclick=()=>{ if(gold>=50){ gold-=50; hp=Math.min(maxHp,hp+40); refresh(); save(); } };
+    document.getElementById("donate").onclick=()=>alert("UPI: sunnynimbre3@oksbi\nThank you!");
+    document.getElementById("reset").onclick=()=>{ if(confirm("Reset?")){ localStorage.clear(); location.reload(); } };
+    load();
+</script>
+</body>
+</html>
